@@ -1,0 +1,16 @@
+{
+  "Author": "Molionr",
+  "Name": "Auto Confirm",
+  "Punchline": "Automatic confirmation",
+  "Description": "Automatically confirm for the window.",
+  "Tags": [
+    "utility"
+  ],
+  "CategoryTags": [
+    "Utility",
+    "Other"
+  ],
+  "InternalName": "autoconfirm",
+  "RepoUrl": "https://github.com/Molionr/AutoConfirm",
+  "AcceptsFeedback": false
+}
