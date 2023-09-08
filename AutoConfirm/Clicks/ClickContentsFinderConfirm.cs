@@ -1,4 +1,5 @@
 ﻿using AutoConfirm.Clicks.BaseClicks;
+using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace AutoConfirm.Clicks
         }
 
         /// <summary>
-        /// Click the commence button.
+        /// Click the commence button.The Bowl of Embers
         /// </summary>
         //public void Withdraw()
         //    => this.ClickAddonButton(this.Addon->WithdrawButton, 9);

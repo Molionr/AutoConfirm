@@ -23,15 +23,47 @@ namespace AutoConfirm
                 for (int i = 0; i < valueCount; i++)
                 {
                     var value = values[i];
-                    valuesStr += value.Type.ToString();
-                    valuesStr += value.Type switch
+                    valuesStr += value.Type.ToString() + ":";
+                    switch (value.Type)
                     {
-                        FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Bool => value.Byte.ToString() + ",",
-                        FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Int => value.Int.ToString() + ",",
-                        FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Float => value.Float.ToString() + ",",
-                        FFXIVClientStructs.FFXIV.Component.GUI.ValueType.UInt => value.UInt.ToString() + ",",
-                        _ => value.Type.ToString() + "??,",
-                    };
+                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Bool :
+                            valuesStr += value.Byte.ToString() + ",";
+                            break;
+                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Int:
+                            valuesStr += value.Int.ToString() + ",";
+                            break;
+                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Float:
+                            valuesStr += value.Float.ToString() + ",";
+                            break;
+                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.UInt:
+                            valuesStr += value.UInt.ToString() + ",";
+                            break;
+                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.String:
+                            {
+                                byte* bytePtr = value.String; // 假设 bytePtr 是一个 byte* 指针
+
+                                int length = 0;
+                                while (bytePtr[length] != 0)
+                                {
+                                    length++;
+                                }
+
+                                byte[] byteArray = new byte[length];
+                                for (int a = 0; a < length; a++)
+                                {
+                                    byteArray[a] = bytePtr[a];
+                                }
+
+                                string stringValue = Encoding.UTF8.GetString(byteArray);
+
+                                valuesStr += stringValue + ",";
+                                break;
+                            }
+
+                        default:
+                            valuesStr += value.Type.ToString() + "??,";
+                            break;
+                    }
                 }
 
                 //PluginLog.Information("count:" + valueCount.ToString());

@@ -1,3 +1,4 @@
+using Dalamud.Data;
 using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
@@ -22,6 +23,9 @@ namespace AutoConfirm
         [PluginService]
         internal static CommandManager CommandManager { get; private set; }
 
+        [PluginService] 
+        public static DataManager Data { get; private set; }
+
         [PluginService]
         internal static ObjectTable ObjectTable { get; private set; }
         [PluginService]
@@ -33,6 +37,5 @@ namespace AutoConfirm
 
         [PluginService]
         public static GameGui GameGui { get; private set; }
-
     }
 }

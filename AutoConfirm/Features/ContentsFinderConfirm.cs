@@ -1,9 +1,16 @@
 ﻿using AutoConfirm.Clicks;
 using AutoConfirm.Features.BaseFeatures;
 using Dalamud.Logging;
+using ECommons.Automation;
+using ECommons.DalamudServices;
+using ECommons.GameFunctions;
+using ECommons.GameHelpers;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,34 +19,73 @@ namespace AutoConfirm.Features
 {
     internal unsafe class ContentsFinderConfirm : BaseFeature
     {
+        private static readonly Stopwatch stopwatch = new();
+
         public override void OnSetup()
         {
-            if (Service.ClientState.LocalPlayer == null) return;
-
             if (!Service.Config.EnableContentsFinderConfirm) return;
 
+            AddonContentsFinderConfirm();
+        }
+
+        private unsafe void AddonContentsFinderConfirm()
+        {
             var bannerWindow = (AtkUnitBase*)Service.GameGui.GetAddonByName("ContentsFinderConfirm", 1);
             if (bannerWindow == null) return;
             if (!bannerWindow->IsVisible) return;
-            //if (bannerWindow->GetHashCode() == _lastBanner) return;
-            //_lastBanner = bannerWindow->GetHashCode();
+
+            var text = bannerWindow->GetTextNodeById(60)->NodeText.ToString().Split(':');
+            if (text.Length < 2) return;
+            if (int.Parse(text[1]) >= Service.Config.ContentsFinderConfirmRemain) return;
+
+            var node = bannerWindow->GetImageNodeById(40);
+            if (node == null) return;
+            var iconId = node->PartsList->Parts[node->PartId].UldAsset->AtkTexture.Resource->IconID;
+            if (iconId is < 62100 or >= 62200) return;
+
+            var classJobId = (uint)(iconId - 62100);
+            if (Service.Config.AutoSwitchJob)
+            {
+                SwitchClassJob(classJobId);
+            }
+
+            if (classJobId != Player.Object.ClassJob.Id) return;
             try
             {
-                var text = bannerWindow->GetTextNodeById(60)->NodeText.ToString().Split(':');
-
-                if (text.Length < 2) return;
-
-                PluginLog.Information(text[1]);
-                
-                if (int.Parse(text[1]) < Service.Config.ContentsFinderConfirmRemain) {
-                    new ClickContentsFinderConfirm(bannerWindow).Commence();
-                }
-
+                new ClickContentsFinderConfirm(bannerWindow).Commence();
             }
             catch (Exception e)
             {
 
                 PluginLog.Error(e, "Error");
+            }
+        }
+
+        /// <summary>
+        /// Switch Player Job
+        /// </summary>
+        /// <param name="jobId"></param>
+        private unsafe void SwitchClassJob(uint jobId)
+        {
+            if (jobId == Player.Object.ClassJob.Id)
+            {
+                stopwatch.Stop();
+                return;
+            }
+            var classJob = Service.Data.Excel.GetSheet<ClassJob>()?.GetRow(jobId);
+            if (classJob == null) return;
+
+            if (stopwatch.IsRunning && stopwatch.ElapsedMilliseconds < 1000) return;
+
+            for (var i = 0; i < 101; i++)
+            {
+                var gs = RaptureGearsetModule.Instance()->Gearset[i];
+                if (gs->Flags.HasFlag(RaptureGearsetModule.GearsetFlag.Exists) && gs->ClassJob == jobId)
+                {
+                    Chat.Instance.SendMessage($"/gearset change {gs->ID + 1}");
+                    stopwatch.Restart();
+                    return;
+                }
             }
         }
     }

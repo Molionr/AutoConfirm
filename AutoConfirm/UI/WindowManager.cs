@@ -12,7 +12,7 @@ namespace AutoConfirm.Windows
         {
             ConfigWindow = new ConfigWindow();
             WindowSystem.AddWindow(ConfigWindow);
-
+            
             Service.Interface.UiBuilder.Draw += DrawUi;
             Service.Interface.UiBuilder.OpenConfigUi += ConfigWindow.Open;
         }

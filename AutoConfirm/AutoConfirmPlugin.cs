@@ -1,6 +1,8 @@
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using AutoConfirm.Windows;
+using ECommons;
+using Module = ECommons.Module;
 
 namespace AutoConfirm
 {
@@ -15,6 +17,8 @@ namespace AutoConfirm
         public AutoConfirmPlugin(DalamudPluginInterface pluginInterface)
         {
             pluginInterface.Create<Service>();
+            ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector, Module.ObjectFunctions);
+
             Service.Config = Service.Interface.GetPluginConfig() as Configuration ?? new Configuration();
 
             WindowManager = new WindowManager();

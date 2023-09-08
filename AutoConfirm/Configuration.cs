@@ -12,6 +12,8 @@ namespace AutoConfirm
 
         public bool EnableContentsFinderConfirm = false;
 
+        public bool AutoSwitchJob = false;
+
         public int ContentsFinderConfirmRemain = 30;
         internal void SaveConfig()
         {

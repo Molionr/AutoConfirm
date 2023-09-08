@@ -15,19 +15,24 @@ namespace AutoConfirm.Windows
         {
             ImGui.BeginChild("ContentsFinderConfirm");
 
-            if (ImGui.Checkbox("Auto Commence for Duty Ready", ref Service.Config.EnableContentsFinderConfirm))
+            ImGui.Checkbox("", ref Service.Config.EnableContentsFinderConfirm);
+            ImGui.SameLine();
+
+            if (ImGui.TreeNode("Auto Commence for Duty Ready"))
             {
-                Service.Config.SaveConfig();
+                ImGui.Indent();
+                ImGui.Checkbox("Auto Switch Job", ref Service.Config.AutoSwitchJob);
+
+                ImGui.DragInt("Remain Time", ref Service.Config.ContentsFinderConfirmRemain, 1, 1, 45);
+                ImGui.Unindent();
+
+                ImGui.TreePop();
             }
-            if (Service.Config.EnableContentsFinderConfirm)
-            {
-                if (ImGui.DragInt("Remain Time", ref Service.Config.ContentsFinderConfirmRemain,1,1,45))
-                {
-                    Service.Config.SaveConfig();
-                }
-            }
+
+
             ImGui.BeginChild("ContentsFinderConfirm");
 
+            Service.Config.SaveConfig();
         }
     }
 }
