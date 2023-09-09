@@ -23,6 +23,7 @@ namespace AutoConfirm
             if (Service.ClientState.LocalPlayer == null) return;
 
             new ContentsFinderConfirm().OnSetup();
+            new NotificationFinder().OnSetup();
 
         }
     }

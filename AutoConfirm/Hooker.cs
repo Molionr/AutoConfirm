@@ -1,6 +1,7 @@
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
+using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Runtime.InteropServices;
@@ -19,52 +20,7 @@ namespace AutoConfirm
         {
             try
             {
-                string valuesStr = string.Empty;
-                for (int i = 0; i < valueCount; i++)
-                {
-                    var value = values[i];
-                    valuesStr += value.Type.ToString() + ":";
-                    switch (value.Type)
-                    {
-                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Bool :
-                            valuesStr += value.Byte.ToString() + ",";
-                            break;
-                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Int:
-                            valuesStr += value.Int.ToString() + ",";
-                            break;
-                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Float:
-                            valuesStr += value.Float.ToString() + ",";
-                            break;
-                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.UInt:
-                            valuesStr += value.UInt.ToString() + ",";
-                            break;
-                        case FFXIVClientStructs.FFXIV.Component.GUI.ValueType.String:
-                            {
-                                byte* bytePtr = value.String; // 假设 bytePtr 是一个 byte* 指针
-
-                                int length = 0;
-                                while (bytePtr[length] != 0)
-                                {
-                                    length++;
-                                }
-
-                                byte[] byteArray = new byte[length];
-                                for (int a = 0; a < length; a++)
-                                {
-                                    byteArray[a] = bytePtr[a];
-                                }
-
-                                string stringValue = Encoding.UTF8.GetString(byteArray);
-
-                                valuesStr += stringValue + ",";
-                                break;
-                            }
-
-                        default:
-                            valuesStr += value.Type.ToString() + "??,";
-                            break;
-                    }
-                }
+                string valuesStr = Callback.DecodeValues(valueCount, values).Replace("\n", ", ");
 
                 //PluginLog.Information("count:" + valueCount.ToString());
 #if DEBUG

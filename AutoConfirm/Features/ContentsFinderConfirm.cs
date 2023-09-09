@@ -21,6 +21,13 @@ namespace AutoConfirm.Features
     {
         private static readonly Stopwatch stopwatch = new();
 
+        public AtkUnitBase* BannerWindow { get; private set; }
+
+        public ContentsFinderConfirm()
+        {
+            BannerWindow = (AtkUnitBase*)Service.GameGui.GetAddonByName("ContentsFinderConfirm", 1);
+        }
+
         public override void OnSetup()
         {
             if (!Service.Config.EnableContentsFinderConfirm) return;
@@ -30,15 +37,14 @@ namespace AutoConfirm.Features
 
         private unsafe void AddonContentsFinderConfirm()
         {
-            var bannerWindow = (AtkUnitBase*)Service.GameGui.GetAddonByName("ContentsFinderConfirm", 1);
-            if (bannerWindow == null) return;
-            if (!bannerWindow->IsVisible) return;
+            if (BannerWindow == null) return;
+            if (!BannerWindow->IsVisible) return;
 
-            var text = bannerWindow->GetTextNodeById(60)->NodeText.ToString().Split(':');
+            var text = BannerWindow->GetTextNodeById(60)->NodeText.ToString().Split(':');
             if (text.Length < 2) return;
             if (int.Parse(text[1]) >= Service.Config.ContentsFinderConfirmRemain) return;
 
-            var node = bannerWindow->GetImageNodeById(40);
+            var node = BannerWindow->GetImageNodeById(40);
             if (node == null) return;
             var iconId = node->PartsList->Parts[node->PartId].UldAsset->AtkTexture.Resource->IconID;
             if (iconId is < 62100 or >= 62200) return;
@@ -52,7 +58,7 @@ namespace AutoConfirm.Features
             if (classJobId != Player.Object.ClassJob.Id) return;
             try
             {
-                new ClickContentsFinderConfirm(bannerWindow).Commence();
+                new ClickContentsFinderConfirm(BannerWindow).Commence();
             }
             catch (Exception e)
             {

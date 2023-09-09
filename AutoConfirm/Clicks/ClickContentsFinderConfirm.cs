@@ -20,8 +20,11 @@ namespace AutoConfirm.Clicks
         /// </summary>
         public void Commence()
         {
-            FireCallback(8);
-            FireCallback(-2);
+            //FireCallback(8);
+            //FireCallback(-2);
+
+            Click(8);
+            Click(-2);
         }
 
         /// <summary>
